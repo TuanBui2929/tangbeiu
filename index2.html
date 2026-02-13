@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Món Quà Bất Ngờ</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            /* Hình nền ban đầu */
+            background: radial-gradient(circle, #ffafbd, #ffc3a0); 
+            background-size: cover;
+            background-position: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            overflow: hidden; 
+            transition: background 1.5s ease;
+        }
+        
+        /* Hiệu ứng trái tim rơi */
+        .heart-fall { position: absolute; color: rgba(255, 255, 255, 0.6); font-size: 20px; animation: fall linear infinite; top: -10%; z-index: 1; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+
+        /* Hộp quà */
+        .gift-container { position: relative; z-index: 10; cursor: pointer; perspective: 1000px; }
+        .gift-box { width: 150px; height: 150px; background: #e91e63; position: relative; border-radius: 10px; transition: 0.5s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .gift-box::before { content: ""; position: absolute; width: 30px; height: 100%; background: #ffeb3b; left: 60px; }
+        .gift-box::after { content: ""; position: absolute; width: 100%; height: 30px; background: #ffeb3b; top: 60px; }
+        .nơ { position: absolute; top: -40px; left: 45px; width: 60px; height: 60px; background: #ffeb3b; border-radius: 50% 50% 0 0; transform: rotate(45deg); display: flex; z-index: 11; }
+        .nơ::after { content: ""; width: 60px; height: 60px; background: #ffeb3b; border-radius: 50% 50% 0 0; transform: rotate(90deg); position: absolute; }
+
+        /* Lời chúc và Ảnh người yêu */
+        #message { display: none; text-align: center; color: #fff; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); z-index: 20; padding: 20px; }
+        .avatar {
+            width: 180px; height: 180px;
+            border-radius: 50%;
+            border: 5px solid #fff;
+            margin: 0 auto 20px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+        h1 { font-size: 2.2em; margin: 0; }
+        p { font-size: 1.1em; font-weight: 500; }
+
+        .hidden { display: none !important; }
+        .active { display: block !important; animation: zoomIn 1.2s ease-out; }
+        @keyframes zoomIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="https://files.catbox.moe/y20v43.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="gift-container" id="giftSection" onclick="openGift()">
+        <div class="nơ"></div>
+        <div class="gift-box"></div>
+        <p style="color: white; font-weight: bold; margin-top: 20px; text-align: center; text-shadow: 1px 1px 5px #000;">Chạm để mở quà...</p>
+    </div>
+
+    <div id="message">
+        <div class="avatar" id="crushImg"></div>
+        <h1>Gửi Bé Yêu! ❤️</h1>
+        <p>Cảm ơn em đã xuất hiện trong đời anh.<br>Anh mong rằng nụ cười này sẽ mãi trên môi em.</p>
+        <p style="font-size: 30px;">💌 ✨ 🌹</p>
+    </div>
+
+    <script>
+        // --- CẤU HÌNH LINK ẢNH GOOGLE DRIVE TẠI ĐÂY ---
+        // 1. Chuột phải vào ảnh trên Drive -> Chia sẻ -> Bất kỳ ai có đường liên kết
+        // 2. Lấy ID của ảnh (đoạn mã nằm giữa /d/ và /view)
+        // 3. Thay ID đó vào chỗ [ID_CỦA_ẢNH] bên dưới
+        
+        const imageID = "kPupPDEntWyA84ia9"; 
+        const directLink = `https://i.postimg.cc/1tQRC4B7/DSCF2604.jpg`;
+
+        // Gán ảnh vào giao diện
+        document.getElementById('crushImg').style.backgroundImage = `url('${directLink}')`;
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-fall');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+            heart.style.opacity = Math.random();
+            document.body.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 5000);
+        }
+        setInterval(createHeart, 300);
+
+        function openGift() {
+            document.getElementById('bgMusic').play();
+
+            var duration = 5 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } }));
+            }, 250);
+
+            document.getElementById('giftSection').classList.add('hidden');
+            document.getElementById('message').classList.add('active');
+            
+            // Đổi hình nền sang ảnh người yêu (làm mờ một chút để hiện chữ rõ hơn)
+            document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('${directLink}')`;
+        }
+    </script>
+</body>
+</html>
